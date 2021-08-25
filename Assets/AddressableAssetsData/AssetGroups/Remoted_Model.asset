@@ -15,8 +15,15 @@ MonoBehaviour:
   m_GroupName: Remoted_Model
   m_Data:
     m_SerializedData: []
-  m_GUID: cb7ce3199e09e7b4b84424afc784d9da
+  m_GUID: 7fedaf470ca8f0c419f4d908e97bec5a
   m_SerializeEntries:
+  - m_GUID: 75299ef02ad021a409bd754f82ec4b6b
+    m_Address: Cube3 1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Model
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
   - m_GUID: 50ffbf2ce5ef863439005b9bccfd0e26
     m_Address: Cube3
     m_ReadOnly: 0

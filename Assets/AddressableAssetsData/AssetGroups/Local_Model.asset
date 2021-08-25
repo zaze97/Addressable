@@ -15,7 +15,7 @@ MonoBehaviour:
   m_GroupName: Local_Model
   m_Data:
     m_SerializedData: []
-  m_GUID: 9dad2a9a188bff0499e2eeebc9feeee2
+  m_GUID: 2050165acb4fb8344a762510c24ac61b
   m_SerializeEntries:
   - m_GUID: 33acde7725644d248b13c23278babb50
     m_Address: Cube1
@@ -24,8 +24,8 @@ MonoBehaviour:
     - Model
     m_MainAsset: {fileID: 0}
     m_TargetAsset: {fileID: 0}
-  - m_GUID: 5501961676a516b4fab8cc52b428cf28
-    m_Address: Cube1 1
+  - m_GUID: e94e626d6f91daa46929b762c3039c64
+    m_Address: home_bg_2560 2
     m_ReadOnly: 0
     m_SerializedLabels:
     - Model

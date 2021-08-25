@@ -28,7 +28,6 @@ public enum BuildEnvironment
 {
     Local,
     Debug,
-    Beta,
     Release
 }
 
@@ -94,25 +93,25 @@ public class AddressableWindow : EditorWindow
         {
             string group_name = "Local_" + info.Name;
             var group = setting.FindGroup(group_name);
-            if (group == null)
+            if (group == null&& info.Name!="Atlas")
             {
                 group = setting.CreateGroup(group_name, false, false, false, new List<AddressableAssetGroupSchema> { setting.DefaultGroup.Schemas[0], setting.DefaultGroup.Schemas[1] });
             }
             AutoMarkRootAddress("Local", info);
-            if (info.Name != "SpriteAtlas")
+            if (info.Name != "SpriteAtlas"&& info.Name!="Atlas")
                 AutoMark(info.Name);
         }
         dirs = new DirectoryInfo(remotedRoot).GetDirectories();
         foreach (var info in dirs)
         {
-
             string group_name = "Remoted_" + info.Name;
             var group = setting.FindGroup(group_name);
-            if (group == null)
+            if (group ==null&& info.Name!="Atlas" )
             {
                 group = setting.CreateGroup(group_name, false, false, false, new List<AddressableAssetGroupSchema> { setting.DefaultGroup.Schemas[0], setting.DefaultGroup.Schemas[1] });
             }
             AutoMarkRootAddress("Remoted", info);
+            if (info.Name != "SpriteAtlas"&& info.Name!="Atlas")
             AutoMark(info.Name, false);
 
         }
@@ -283,27 +282,46 @@ public class AddressableWindow : EditorWindow
     }
 
     #region 图集
-    public static string AtlasRoot
+    public static string AtlasLocalRoot
     {
         get
         {
             return Application.dataPath + "/AddressableAssets/Local/Atlas";
         }
     }
-    public static string SpriteAtlas
+    public static string SpriteLocalAtlas
     {
         get
         {
             return Application.dataPath + "/AddressableAssets/Local/SpriteAtlas";
         }
     }
+    public static string AtlasRemotedRoot
+    {
+        get
+        {
+            return Application.dataPath + "/AddressableAssets/Remoted/Atlas";
+        }
+    }
+    public static string SpriteRemotedAtlas
+    {
+        get
+        {
+            return Application.dataPath + "/AddressableAssets/Remoted/SpriteAtlas";
+        }
+    }
 
     public static void AutoCreateSpriteAtlas()
     {
-        DirectoryInfo[] dirs = new DirectoryInfo(AtlasRoot).GetDirectories();
-        foreach (var info in dirs)
+        DirectoryInfo[] Locadirs = new DirectoryInfo(AtlasLocalRoot).GetDirectories();
+        foreach (var info in Locadirs)
         {
-            addSpriteAtlas(AtlasRoot + "/" + info.Name, info);
+            addSpriteAtlas(AtlasLocalRoot + "/" + info.Name,AtlasLocalRoot,SpriteLocalAtlas,"Local_SpriteAtlas", info);
+        }
+        DirectoryInfo[] Remotedirs = new DirectoryInfo(AtlasRemotedRoot).GetDirectories();
+        foreach (var info in Remotedirs)
+        {
+            addSpriteAtlas(AtlasRemotedRoot + "/" + info.Name,AtlasRemotedRoot,SpriteRemotedAtlas,"Remoted_SpriteAtlas", info);
         }
     }
 
@@ -312,7 +330,7 @@ public class AddressableWindow : EditorWindow
     /// </summary>
     /// <param name="path">路径</param>
     /// <param name="dir">文件夹</param>
-    private static void addSpriteAtlas(string path, DirectoryInfo dir)
+    private static void addSpriteAtlas(string path,string AtlasRoot,string SpriteAtlas,  string groupname, DirectoryInfo dir)
     {
 
         var dirs = dir.GetDirectories();
@@ -325,13 +343,13 @@ public class AddressableWindow : EditorWindow
                 int assetIndex = filePath.IndexOf("Assets");
                 string guidPath = filePath.Remove(0, assetIndex);
                 var guid = AssetDatabase.AssetPathToGUID(guidPath);
-                var group = setting.FindGroup("Local_SpriteAtlas");
+                var group = setting.FindGroup(groupname);
                 var entry = setting.CreateOrMoveEntry(guid, group);
                 var label = name + ".spriteatlas";
                 if (entry.address != name)
                 {
                     entry.SetAddress(name);
-                    addAddressInfo("Local_SpriteAtlas", name);
+                    addAddressInfo(groupname, name);
                 }
                 List<string> oldLabels = new List<string>();
                 foreach (var item in entry.labels)
@@ -401,13 +419,13 @@ public class AddressableWindow : EditorWindow
                 int assetIndex = filePath.IndexOf("Assets");
                 string guidPath = filePath.Remove(0, assetIndex);
                 var guid = AssetDatabase.AssetPathToGUID(guidPath);
-                var group = setting.FindGroup("Local_SpriteAtlas");
+                var group = setting.FindGroup(groupname);
                 var entry = setting.CreateOrMoveEntry(guid, group);
                 var label = name + ".spriteatlas";
                 if (entry.address != name)
                 {
                     entry.SetAddress(name);
-                    addAddressInfo("Local_SpriteAtlas", name);
+                    addAddressInfo(groupname, name);
                 }
                 List<string> oldLabels = new List<string>();
                 foreach (var item in entry.labels)
@@ -439,7 +457,7 @@ public class AddressableWindow : EditorWindow
             {
                 foreach (var info in dirs)
                 {
-                    addSpriteAtlas(path + "/" + info.Name, info);
+                    addSpriteAtlas(path + "/" + info.Name,AtlasRoot,SpriteAtlas,groupname, info);
                 }
             }
 
@@ -551,7 +569,8 @@ public class AddressableWindow : EditorWindow
             string buildPath = "ServerData" + "/[BuildTarget]/" + ver[0] + "." + ver[1] + "/" + name;
             if (setting.profileSettings.GetValueByName(setting.activeProfileId, "RemoteBuildPath") != buildPath)
                 setting.profileSettings.SetValue(setting.activeProfileId, "RemoteBuildPath", buildPath);
-            string loadPath = url + "/poetry/" + buildPath;
+            //string loadPath = url + "/poetry/" + buildPath;
+            string loadPath = url + buildPath;
             if (setting.profileSettings.GetValueByName(setting.activeProfileId, "RemoteLoadPath") != loadPath)
                 setting.profileSettings.SetValue(setting.activeProfileId, "RemoteLoadPath", loadPath);
         }
@@ -635,6 +654,7 @@ public class AddressableWindow : EditorWindow
                             bundledAssetGroupSchema.UseAssetBundleCrc = bundleCrc;
                             bundledAssetGroupSchema.BundleNaming = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundleNamingStyle.NoHash;
                             bundledAssetGroupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundlePackingMode.PackTogetherByLabel;
+                            Debug.Log("buildPath:"+buildPath+"----loadPath:"+loadPath);
 
                         }
                         else if (schema is UnityEditor.AddressableAssets.Settings.GroupSchemas.ContentUpdateGroupSchema)
