@@ -15,11 +15,11 @@ public class DesAsset : MonoBehaviour
     public GameObject SenceCube;
     private void Start()
     {
-        // prefabRef.InstantiateAsync().Completed += (args) =>
-        // {
-        //     Cube = args.Result;
-        //     Cube.GetComponent<MeshRenderer>().material.mainTexture = textureRef.Asset as Texture;
-        // };
+        prefabRef.InstantiateAsync().Completed += (args) =>
+        {
+            Cube = args.Result;
+            Cube.GetComponent<MeshRenderer>().material.mainTexture = textureRef.Asset as Texture;
+        };
         AtlasedSpriteRef.LoadAssetAsync<SpriteAtlas>().Completed+=(texs) =>
         {
             Debug.Log(texs.Result.name);
@@ -33,11 +33,11 @@ public class DesAsset : MonoBehaviour
             image.sprite =spriteArray[0] as Sprite;
         };
         ///Lamda 表达式回调方式
-        // textureRef.LoadAssetAsync<Texture>().Completed += (texs) =>
-        // {
-        //     Debug.Log(texs.Result.name);
-        //     SenceCube.GetComponent<MeshRenderer>().material.mainTexture = texs.Result as Texture;
-        // };
+        textureRef.LoadAssetAsync<Texture>().Completed += (texs) =>
+        {
+            Debug.Log(texs.Result.name);
+            SenceCube.GetComponent<MeshRenderer>().material.mainTexture = texs.Result as Texture;
+        };
     }
 
     private void Update()

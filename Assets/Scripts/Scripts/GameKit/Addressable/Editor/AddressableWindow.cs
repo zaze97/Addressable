@@ -654,8 +654,6 @@ public class AddressableWindow : EditorWindow
                             bundledAssetGroupSchema.UseAssetBundleCrc = bundleCrc;
                             bundledAssetGroupSchema.BundleNaming = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundleNamingStyle.NoHash;
                             bundledAssetGroupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundlePackingMode.PackTogetherByLabel;
-                            Debug.Log("buildPath:"+buildPath+"----loadPath:"+loadPath);
-
                         }
                         else if (schema is UnityEditor.AddressableAssets.Settings.GroupSchemas.ContentUpdateGroupSchema)
                         {
