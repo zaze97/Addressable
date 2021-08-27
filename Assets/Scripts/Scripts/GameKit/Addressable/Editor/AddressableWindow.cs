@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Build;
@@ -8,6 +9,9 @@ using UnityEditor;
 using UnityEngine.U2D;
 using UnityEditor.U2D;
 using System.Text;
+using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Editor;
+using Object = UnityEngine.Object;
 
 /// <summary>
 /// 记录所有资源MD5信息
@@ -26,19 +30,20 @@ public class MD5Info
 
 public enum BuildEnvironment
 {
-    Local,
+    // Local,
     Debug,
     Release
 }
 
-public class AddressableWindow : EditorWindow
+public class AddressableWindow : OdinEditorWindow
 {
     private static AddressableAssetSettings setting;
 
     [MenuItem("BuildTools/自动标记资源地址")]
     public static void AutoMarkAddress()
     {
-        setting = AssetDatabase.LoadAssetAtPath<AddressableAssetSettings>("Assets/AddressableAssetsData/AddressableAssetSettings.asset");
+        setting = AssetDatabase.LoadAssetAtPath<AddressableAssetSettings>(
+            "Assets/AddressableAssetsData/AddressableAssetSettings.asset");
         Mark();
         EditorUtility.DisplayDialog("自动标记", "自动标记成功", "确定");
     }
@@ -46,14 +51,14 @@ public class AddressableWindow : EditorWindow
     [MenuItem("BuildTools/AddressableWindow")]
     public static void ShowWindow()
     {
-        EditorWindow.GetWindow(typeof(AddressableWindow));
-        setting = AssetDatabase.LoadAssetAtPath<AddressableAssetSettings>("Assets/AddressableAssetsData/AddressableAssetSettings.asset");
+        GetWindow(typeof(AddressableWindow)).Show();
+        //EditorWindow.GetWindow(typeof(AddressableWindow));
+        setting = AssetDatabase.LoadAssetAtPath<AddressableAssetSettings>(
+            "Assets/AddressableAssetsData/AddressableAssetSettings.asset");
     }
 
     AddressableWindow()
     {
-
-
     }
 
     private void OnEnable()
@@ -61,10 +66,12 @@ public class AddressableWindow : EditorWindow
         this.titleContent = new GUIContent("Addressable Build Window");
         isChooseTarget = false;
         version = Application.version;
-        setting = AssetDatabase.LoadAssetAtPath<AddressableAssetSettings>("Assets/AddressableAssetsData/AddressableAssetSettings.asset");
-        url = PlayerPrefs.GetString(setting.profileSettings.GetProfileName(setting.activeProfileId) + "_BuildUrl", @"http://[PrivateIpAddress]:[HostingServicePort]");
-        environment = (BuildEnvironment)System.Enum.Parse(typeof(BuildEnvironment), PlayerPrefs.GetString("BuildEnvironment", BuildEnvironment.Debug.ToString()));
-
+        setting = AssetDatabase.LoadAssetAtPath<AddressableAssetSettings>(
+            "Assets/AddressableAssetsData/AddressableAssetSettings.asset");
+        url = PlayerPrefs.GetString(setting.profileSettings.GetProfileName(setting.activeProfileId) + "_BuildUrl",
+            @"http://[PrivateIpAddress]:[HostingServicePort]");
+        environment = (BuildEnvironment) System.Enum.Parse(typeof(BuildEnvironment),
+            PlayerPrefs.GetString("BuildEnvironment", BuildEnvironment.Debug.ToString()));
     }
 
     private void OnDisable()
@@ -74,6 +81,7 @@ public class AddressableWindow : EditorWindow
     }
 
     #region 自动标记
+
     public static Dictionary<string, List<string>> addressDic = new Dictionary<string, List<string>>();
 
     public static void Mark()
@@ -93,28 +101,35 @@ public class AddressableWindow : EditorWindow
         {
             string group_name = "Local_" + info.Name;
             var group = setting.FindGroup(group_name);
-            if (group == null&&info.Name!="Atlas")
+            if (group == null && info.Name != "Atlas")
             {
-                group = setting.CreateGroup(group_name, false, false, false, new List<AddressableAssetGroupSchema> { setting.DefaultGroup.Schemas[0], setting.DefaultGroup.Schemas[1] });
+                group = setting.CreateGroup(group_name, false, false, false,
+                    new List<AddressableAssetGroupSchema>
+                        {setting.DefaultGroup.Schemas[0], setting.DefaultGroup.Schemas[1]});
             }
+
             AutoMarkRootAddress("Local", info);
-            if (info.Name != "SpriteAtlas"&&info.Name!="Atlas")
+            if (info.Name != "SpriteAtlas" && info.Name != "Atlas")
                 AutoMark(info.Name);
         }
+
         dirs = new DirectoryInfo(remotedRoot).GetDirectories();
         foreach (var info in dirs)
         {
             string group_name = "Remoted_" + info.Name;
             var group = setting.FindGroup(group_name);
-            if (group ==null&&info.Name!="Atlas")
+            if (group == null && info.Name != "Atlas")
             {
-                group = setting.CreateGroup(group_name, false, false, false, new List<AddressableAssetGroupSchema> { setting.DefaultGroup.Schemas[0], setting.DefaultGroup.Schemas[1] });
+                group = setting.CreateGroup(group_name, false, false, false,
+                    new List<AddressableAssetGroupSchema>
+                        {setting.DefaultGroup.Schemas[0], setting.DefaultGroup.Schemas[1]});
             }
-            AutoMarkRootAddress("Remoted", info);
-            if (info.Name != "SpriteAtlas"&&info.Name!="Atlas")
-            AutoMark(info.Name, false);
 
+            AutoMarkRootAddress("Remoted", info);
+            if (info.Name != "SpriteAtlas" && info.Name != "Atlas")
+                AutoMark(info.Name, false);
         }
+
         ///自动创建图集
         Debug.Log("开始创建图集");
         AutoCreateSpriteAtlas();
@@ -123,7 +138,7 @@ public class AddressableWindow : EditorWindow
         Debug.Log("MarkAsset Successful");
     }
 
-    public static void AutoMark(string name,bool local=true)
+    public static void AutoMark(string name, bool local = true)
     {
         string path = local ? "Local" : "Remoted";
         string root = Application.dataPath + "/AddressableAssets/" + path + "/" + name;
@@ -144,6 +159,7 @@ public class AddressableWindow : EditorWindow
                     list.Remove(info.Name);
                 }
             }
+
             group.RemoveAssetEntry(entry);
             mark("Assets/AddressableAssets/" + path + "/" + name, name, info, local);
         }
@@ -159,6 +175,7 @@ public class AddressableWindow : EditorWindow
                 mark(path + "/" + dir.Name, name, info, local);
             }
         }
+
         markFiles(path, name, dir, local);
     }
 
@@ -179,17 +196,21 @@ public class AddressableWindow : EditorWindow
                     string[] allDirs;
                     if (local)
                     {
-                        allDirs = (path + "/" + dir.Name).Replace("Assets/AddressableAssets/Local/" + name + "/", string.Empty).Split('/');
+                        allDirs = (path + "/" + dir.Name)
+                            .Replace("Assets/AddressableAssets/Local/" + name + "/", string.Empty).Split('/');
                     }
                     else
                     {
-                        allDirs = (path + "/" + dir.Name).Replace("Assets/AddressableAssets/Remoted/" + name + "/", string.Empty).Split('/');
+                        allDirs = (path + "/" + dir.Name)
+                            .Replace("Assets/AddressableAssets/Remoted/" + name + "/", string.Empty).Split('/');
                     }
+
                     label.Add(name);
                     for (int i = 0; i < allDirs.Length; i++)
                     {
                         label.Add(allDirs[i]);
                     }
+
                     var guid = AssetDatabase.AssetPathToGUID(assetPath);
                     var group = setting.FindGroup(group_name);
                     if (group != null)
@@ -206,11 +227,13 @@ public class AddressableWindow : EditorWindow
                                 if (!label.Contains(item))
                                     oldLabels.Add(item);
                             }
+
                             for (int i = 0; i < oldLabels.Count; i++)
                             {
                                 entry.SetLabel(oldLabels[i], false);
                                 setting.RemoveLabel(oldLabels[i]);
                             }
+
                             for (int i = 0; i < label.Count; i++)
                             {
                                 var _label = label[i];
@@ -218,6 +241,7 @@ public class AddressableWindow : EditorWindow
                                 {
                                     setting.AddLabel(_label);
                                 }
+
                                 entry.SetLabel(_label, true);
                             }
                         }
@@ -241,7 +265,13 @@ public class AddressableWindow : EditorWindow
             {
                 if (file.Extension != ".meta" && file.Extension != ".spriteatlas")
                 {
+                    string[] dirSplit = dir.ToString().Split(new string[] {"AddressableAssets"},
+                        StringSplitOptions.RemoveEmptyEntries);
                     string address = file.Name;
+                    address = (dirSplit[dirSplit.Length - 1]) + address;
+                    address = address.Substring(1);
+                    address = address.Replace("\\", "/");
+                    Debug.Log("address：" + address);
                     int index = address.IndexOf(".");
                     address = address.Remove(index, address.Length - index);
                     string group_name = path + "_" + dir.Name;
@@ -260,15 +290,18 @@ public class AddressableWindow : EditorWindow
                             {
                                 oldLabels.Add(item);
                             }
+
                             for (int i = 0; i < oldLabels.Count; i++)
                             {
                                 entry.SetLabel(oldLabels[i], false);
                                 setting.RemoveLabel(oldLabels[i]);
                             }
+
                             if (!setting.GetLabels().Contains(dir.Name))
                             {
                                 setting.AddLabel(dir.Name);
                             }
+
                             entry.SetLabel(dir.Name, true);
                         }
                     }
@@ -282,46 +315,21 @@ public class AddressableWindow : EditorWindow
     }
 
     #region 图集
-    public static string AtlasLocalRoot
-    {
-        get
-        {
-            return Application.dataPath + "/AddressableAssets/Local/Atlas";
-        }
-    }
-    public static string SpriteLocalAtlas
-    {
-        get
-        {
-            return Application.dataPath + "/AddressableAssets/Local/SpriteAtlas";
-        }
-    }
-    public static string AtlasRemotedRoot
-    {
-        get
-        {
-            return Application.dataPath + "/AddressableAssets/Remoted/Atlas";
-        }
-    }
-    public static string SpriteRemotedAtlas
-    {
-        get
-        {
-            return Application.dataPath + "/AddressableAssets/Remoted/SpriteAtlas";
-        }
-    }
 
     public static void AutoCreateSpriteAtlas()
     {
-        DirectoryInfo[] Locadirs = new DirectoryInfo(AtlasLocalRoot).GetDirectories();
+        DirectoryInfo[] Locadirs = new DirectoryInfo(GlobalPath.AtlasLocalRoot).GetDirectories();
         foreach (var info in Locadirs)
         {
-            addSpriteAtlas(AtlasLocalRoot + "/" + info.Name,AtlasLocalRoot,SpriteLocalAtlas,"Local_SpriteAtlas", info);
+            addSpriteAtlas(GlobalPath.AtlasLocalRoot + "/" + info.Name, GlobalPath.AtlasLocalRoot,
+                GlobalPath.SpriteLocalAtlas, "Local_SpriteAtlas", info);
         }
-        DirectoryInfo[] Remotedirs = new DirectoryInfo(AtlasRemotedRoot).GetDirectories();
+
+        DirectoryInfo[] Remotedirs = new DirectoryInfo(GlobalPath.AtlasRemotedRoot).GetDirectories();
         foreach (var info in Remotedirs)
         {
-            addSpriteAtlas(AtlasRemotedRoot + "/" + info.Name,AtlasRemotedRoot,SpriteRemotedAtlas,"Remoted_SpriteAtlas", info);
+            addSpriteAtlas(GlobalPath.AtlasRemotedRoot + "/" + info.Name, GlobalPath.AtlasRemotedRoot,
+                GlobalPath.SpriteRemotedAtlas, "Remoted_SpriteAtlas", info);
         }
     }
 
@@ -330,9 +338,9 @@ public class AddressableWindow : EditorWindow
     /// </summary>
     /// <param name="path">路径</param>
     /// <param name="dir">文件夹</param>
-    private static void addSpriteAtlas(string path,string AtlasRoot,string SpriteAtlas,  string groupname, DirectoryInfo dir)
+    private static void addSpriteAtlas(string path, string AtlasRoot, string SpriteAtlas, string groupname,
+        DirectoryInfo dir)
     {
-
         var dirs = dir.GetDirectories();
         if (dirs == null || dirs.Length == 0)
         {
@@ -351,26 +359,31 @@ public class AddressableWindow : EditorWindow
                     entry.SetAddress(name);
                     addAddressInfo(groupname, name);
                 }
+
                 List<string> oldLabels = new List<string>();
                 foreach (var item in entry.labels)
                 {
                     if (item != label)
                         oldLabels.Add(item);
                 }
+
                 for (int i = 0; i < oldLabels.Count; i++)
                 {
                     entry.SetLabel(oldLabels[i], false);
                     setting.RemoveLabel(oldLabels[i]);
                 }
+
                 if (!setting.GetLabels().Contains("SpriteAtlas"))
                 {
                     setting.AddLabel("SpriteAtlas");
                 }
+
                 entry.SetLabel("SpriteAtlas", true);
                 if (!setting.GetLabels().Contains(label))
                 {
                     setting.AddLabel(label);
                 }
+
                 entry.SetLabel(label, true);
                 return;
             }
@@ -413,7 +426,7 @@ public class AddressableWindow : EditorWindow
                 index = path.IndexOf("Assets");
                 string spritePath = path.Remove(0, index);
                 Object obj = AssetDatabase.LoadAssetAtPath(spritePath, typeof(Object));
-                atlas.Add(new[] { obj });
+                atlas.Add(new[] {obj});
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
                 int assetIndex = filePath.IndexOf("Assets");
@@ -427,26 +440,31 @@ public class AddressableWindow : EditorWindow
                     entry.SetAddress(name);
                     addAddressInfo(groupname, name);
                 }
+
                 List<string> oldLabels = new List<string>();
                 foreach (var item in entry.labels)
                 {
                     if (item != label)
                         oldLabels.Add(item);
                 }
+
                 for (int i = 0; i < oldLabels.Count; i++)
                 {
                     entry.SetLabel(oldLabels[i], false);
                     setting.RemoveLabel(oldLabels[i]);
                 }
+
                 if (!setting.GetLabels().Contains(label))
                 {
                     setting.AddLabel(label);
                 }
+
                 entry.SetLabel(label, true);
                 if (!setting.GetLabels().Contains("SpriteAtlas"))
                 {
                     setting.AddLabel("SpriteAtlas");
                 }
+
                 entry.SetLabel("SpriteAtlas", true);
                 AssetDatabase.Refresh();
             }
@@ -457,14 +475,14 @@ public class AddressableWindow : EditorWindow
             {
                 foreach (var info in dirs)
                 {
-                    addSpriteAtlas(path + "/" + info.Name,AtlasRoot,SpriteAtlas,groupname, info);
+                    addSpriteAtlas(path + "/" + info.Name, AtlasRoot, SpriteAtlas, groupname, info);
                 }
             }
-
         }
     }
 
     #endregion
+
     private static void addAddressInfo(string group, string _address)
     {
         List<string> list;
@@ -478,7 +496,6 @@ public class AddressableWindow : EditorWindow
             {
                 Debug.LogError("命名重复\n在" + group + "中已经存在" + _address);
             }
-
         }
         else
         {
@@ -487,6 +504,7 @@ public class AddressableWindow : EditorWindow
             addressDic.Add(group, list);
         }
     }
+
     #endregion
 
     #region 资源打包
@@ -505,15 +523,9 @@ public class AddressableWindow : EditorWindow
 
     private bool isChooseTarget = false;
 
-    /// <summary>
-    /// 版本信息
-    /// </summary>
-    private string version = string.Empty;
 
-    /// <summary>
-    /// 远程资源地址
-    /// </summary>
-    public string url;
+
+
 
     private static Dictionary<string, MD5Info> md5files = new Dictionary<string, MD5Info>();
     private static Dictionary<string, MD5Info> md5Newfiles = new Dictionary<string, MD5Info>();
@@ -536,13 +548,13 @@ public class AddressableWindow : EditorWindow
         int index = Application.dataPath.LastIndexOf('/');
         string rootPath = Application.dataPath.Remove(index);
         string sourcePath = rootPath + "/Library/com.unity.addressables/StreamingAssetsCopy/" + plat;
-        setting = AssetDatabase.LoadAssetAtPath<AddressableAssetSettings>("Assets/AddressableAssetsData/AddressableAssetSettings.asset");
+        setting = AssetDatabase.LoadAssetAtPath<AddressableAssetSettings>(
+            "Assets/AddressableAssetsData/AddressableAssetSettings.asset");
         string[] ver = version.Split('.');
         string name = setting.profileSettings.GetProfileName(setting.activeProfileId);
         string versionPath = ver[0] + "." + ver[1] + "/" + name;
         string targetPath = rootPath + "/BuildAddressableData/" + plat + "/" + versionPath;
         BuildTools.CopyDirectory(sourcePath, targetPath, false);
-
     }
 
     private void setActiveProfileId()
@@ -552,28 +564,31 @@ public class AddressableWindow : EditorWindow
         {
             setting.profileSettings.AddProfile(environment.ToString(), setting.activeProfileId);
         }
+
         var id = setting.profileSettings.GetProfileId(environment.ToString());
         if (setting.activeProfileId != id)
             setting.activeProfileId = id;
-        if (environment == BuildEnvironment.Local)
+        if (environment == BuildEnvironment.Debug)
         {
-            setting.profileSettings.SetValue(setting.activeProfileId, "RemoteBuildPath", "[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]");
-            setting.profileSettings.SetValue(setting.activeProfileId, "RemoteLoadPath", "{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]");
             setting.BuildRemoteCatalog = false;
         }
         else
         {
             setting.BuildRemoteCatalog = true;
-            string[] ver = version.Split('.');
-            string name = setting.profileSettings.GetProfileName(setting.activeProfileId);
-            string buildPath = "ServerData" + "/[BuildTarget]/" + ver[0] + "." + ver[1] + "/" + name;
-            if (setting.profileSettings.GetValueByName(setting.activeProfileId, "RemoteBuildPath") != buildPath)
-                setting.profileSettings.SetValue(setting.activeProfileId, "RemoteBuildPath", buildPath);
-            //string loadPath = url + "/poetry/" + buildPath;
-            string loadPath = url + buildPath;
-            if (setting.profileSettings.GetValueByName(setting.activeProfileId, "RemoteLoadPath") != loadPath)
-                setting.profileSettings.SetValue(setting.activeProfileId, "RemoteLoadPath", loadPath);
         }
+
+        setting.profileSettings.SetValue(setting.activeProfileId, "LocalBuildPath", GlobalPath.LocalBuildPath);
+        setting.profileSettings.SetValue(setting.activeProfileId, "LocalLoadPath", GlobalPath.LocalLoadPath);
+
+        string[] ver = version.Split('.');
+        string name = setting.profileSettings.GetProfileName(setting.activeProfileId);
+        string buildPath = GlobalPath.RemoteBuildPath + "/" + ver[0] + "." + ver[1] + "/" + name;
+        if (setting.profileSettings.GetValueByName(setting.activeProfileId, "RemoteBuildPath") != buildPath)
+            setting.profileSettings.SetValue(setting.activeProfileId, "RemoteBuildPath", buildPath);
+        //string loadPath = url + "/poetry/" + buildPath;
+        string loadPath = url + buildPath;
+        if (setting.profileSettings.GetValueByName(setting.activeProfileId, "RemoteLoadPath") != loadPath)
+            setting.profileSettings.SetValue(setting.activeProfileId, "RemoteLoadPath", loadPath);
     }
 
     /// <summary>
@@ -620,7 +635,7 @@ public class AddressableWindow : EditorWindow
                     foreach (var schema in group.Schemas)
                     {
                         if (schema is UnityEditor.AddressableAssets.Settings.GroupSchemas
-                                .BundledAssetGroupSchema)
+                            .BundledAssetGroupSchema)
                         {
                             bool bundleCrc = true;
                             string buildPath = AddressableAssetSettings.kLocalBuildPath;
@@ -628,15 +643,23 @@ public class AddressableWindow : EditorWindow
                             if (group.name.Contains("Local_"))
                             {
                                 bundleCrc = status == 0;
-                                buildPath = status == 0 ? AddressableAssetSettings.kRemoteBuildPath : AddressableAssetSettings.kLocalBuildPath;
-                                loadPath = status == 0 ? AddressableAssetSettings.kRemoteLoadPath : AddressableAssetSettings.kLocalLoadPath;
+                                buildPath = status == 0
+                                    ? AddressableAssetSettings.kRemoteBuildPath
+                                    : AddressableAssetSettings.kLocalBuildPath;
+                                loadPath = status == 0
+                                    ? AddressableAssetSettings.kRemoteLoadPath
+                                    : AddressableAssetSettings.kLocalLoadPath;
                             }
                             else if (group.name.Contains("Remoted_"))
                             {
                                 bundleCrc = !(status == 2);
 
-                                buildPath = status == 2 ? AddressableAssetSettings.kLocalBuildPath : AddressableAssetSettings.kRemoteBuildPath;
-                                loadPath = status == 2 ? AddressableAssetSettings.kLocalLoadPath : AddressableAssetSettings.kRemoteLoadPath;
+                                buildPath = status == 2
+                                    ? AddressableAssetSettings.kLocalBuildPath
+                                    : AddressableAssetSettings.kRemoteBuildPath;
+                                loadPath = status == 2
+                                    ? AddressableAssetSettings.kLocalLoadPath
+                                    : AddressableAssetSettings.kRemoteLoadPath;
                             }
                             else if (group.name.Contains("UpdateGroup_"))
                             {
@@ -644,20 +667,25 @@ public class AddressableWindow : EditorWindow
                                 buildPath = AddressableAssetSettings.kRemoteBuildPath;
                                 loadPath = AddressableAssetSettings.kRemoteLoadPath;
                             }
+
                             var bundledAssetGroupSchema =
-                                   (schema as UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema);
+                                (schema as UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema);
                             bundledAssetGroupSchema.BuildPath.SetVariableByName(group.Settings,
                                 buildPath);
                             bundledAssetGroupSchema.LoadPath.SetVariableByName(group.Settings,
                                 loadPath);
 
                             bundledAssetGroupSchema.UseAssetBundleCrc = bundleCrc;
-                            bundledAssetGroupSchema.BundleNaming = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundleNamingStyle.NoHash;
-                            bundledAssetGroupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundlePackingMode.PackTogetherByLabel;
+                            bundledAssetGroupSchema.BundleNaming = UnityEditor.AddressableAssets.Settings.GroupSchemas
+                                .BundledAssetGroupSchema.BundleNamingStyle.NoHash;
+                            bundledAssetGroupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas
+                                .BundledAssetGroupSchema.BundlePackingMode.PackTogetherByLabel;
                         }
                         else if (schema is UnityEditor.AddressableAssets.Settings.GroupSchemas.ContentUpdateGroupSchema)
                         {
-                            var updateGroupSchema = (schema as UnityEditor.AddressableAssets.Settings.GroupSchemas.ContentUpdateGroupSchema);
+                            var updateGroupSchema =
+                                (schema as UnityEditor.AddressableAssets.Settings.GroupSchemas.
+                                    ContentUpdateGroupSchema);
 
                             if (group.name.Contains("Local_"))
                             {
@@ -671,12 +699,12 @@ public class AddressableWindow : EditorWindow
                             {
                                 updateGroupSchema.StaticContent = false;
                             }
-
                         }
                     }
                 }
             }
         }
+
         for (int i = 0; i < deleteList.Count; i++)
         {
             setting.RemoveGroup(deleteList[i]);
@@ -694,21 +722,24 @@ public class AddressableWindow : EditorWindow
         {
             md5Newfiles.Clear();
         }
+
         string[] ver = version.Split('.');
-        string path = Application.dataPath.Replace("Assets", "ServerData/" + BuildTools.Platform + "/" + ver[0] + "." + ver[1] + "/" + environment.ToString());
-        Debug.Log(path);
+        string path = Application.dataPath.Replace("Assets",
+            "ServerData/" + BuildTools.Platform + "/" + ver[0] + "." + ver[1] + "/" + environment.ToString());
         if (Directory.Exists(path))
         {
             DirectoryInfo dir = new DirectoryInfo(path);
             md5File(dir, old);
         }
+
         if (!old)
         {
             if (md5files.Count > 0)
             {
                 if (md5Newfiles.Count > 2)
                 {
-                    string targetPath = Application.dataPath.Replace("Assets", "BuildAssets/Assets/" + BuildTools.Platform + "/" + version + "/" + environment.ToString());
+                    string targetPath = Application.dataPath.Replace("Assets",
+                        "BuildAssets/Assets/" + BuildTools.Platform + "/" + version + "/" + environment.ToString());
                     foreach (var info in md5Newfiles)
                     {
                         MD5Info md5;
@@ -726,14 +757,13 @@ public class AddressableWindow : EditorWindow
                     }
                 }
             }
-
         }
+
         AssetDatabase.Refresh();
     }
 
     private static void md5File(DirectoryInfo info, bool old = true)
     {
-
         FileInfo[] files = info.GetFiles();
         if (files.Length > 0)
         {
@@ -744,10 +774,12 @@ public class AddressableWindow : EditorWindow
                 {
                     continue;
                 }
+
                 if (file.Extension == ".meta")
                 {
                     continue;
                 }
+
                 string FilePath = file.FullName.Replace(@"\", "/");
                 MD5Info md5 = new MD5Info();
                 md5.AssetPath = FilePath;
@@ -769,12 +801,10 @@ public class AddressableWindow : EditorWindow
                     {
                         md5Newfiles.Add(md5.AssetPath, md5);
                     }
-
                 }
-
-
             }
         }
+
         DirectoryInfo[] dirs = info.GetDirectories();
         if (dirs != null && dirs.Length > 0)
         {
@@ -802,6 +832,7 @@ public class AddressableWindow : EditorWindow
                 pathList.Add(scene.path);
             }
         }
+
         return pathList.ToArray();
     }
 
@@ -815,6 +846,7 @@ public class AddressableWindow : EditorWindow
 /*            Generator.ClearAll();
             Generator.GenAll();*/
         }
+
         AssetDatabase.Refresh();
         setActiveProfileId();
         AssetDatabase.Refresh();
@@ -843,6 +875,7 @@ public class AddressableWindow : EditorWindow
             {
                 showMessage = buildApp ? "打包整包成功" : "打包整包资源完成";
             }
+
             if (EditorUtility.DisplayDialog(buildApp ? "打包完成" : "打包资源", showMessage, "确定"))
             {
                 if (buildApp)
@@ -850,9 +883,7 @@ public class AddressableWindow : EditorWindow
                     EditorUtility.RevealInFinder(BuildTools.OutPath);
                     BuildTools.OutPath = string.Empty;
                 }
-
             }
-
         }
         else
         {
@@ -867,22 +898,272 @@ public class AddressableWindow : EditorWindow
     /// <summary>
     /// 更新版本号，需要强制更新
     /// </summary>
-    private void updateBuildVersion()
+    private void updateBuildVersion(bool isAdd=true)
     {
+        int index = isAdd ? 1 : -1;
         string[] ver = version.Split('.');
-        version = ver[0] + "." + (int.Parse(ver[1]) + 1) + ".0";
+        int intver = int.Parse(ver[1])+ index;
+        version = ver[0] + "." +intver + ".0";
+        if (intver < 1)
+        {
+            version = ver[0] + "." + 1 + ".0";
+        }
     }
 
     /// <summary>
     /// 更新资源号，不用强制更新安装包
     /// </summary>
-    private void updateAssetVersion()
+    private void updateAssetVersion(bool isAdd=true)
     {
+        int index = isAdd ? 1 : -1;
         string[] ver = version.Split('.');
-        version = ver[0] + "." + ver[1] + "." + (int.Parse(ver[2]) + 1);
-    }
+        int intver = int.Parse(ver[2])+ index;
+        version = ver[0] + "." + ver[1] + "." + (intver);
+        
+            if (intver<0)
+                version = ver[0] + "." + ver[1] + "." + (0);
 
-    private void OnGUI()
+    }
+    [HorizontalGroup("版本信息", 0.1f, LabelWidth = 20)] //设置一个父节点，然后水平排列，然后Box子节点垂直排列
+    /// <summary>
+    /// 版本信息
+    /// </summary>
+    [ReadOnly,HideLabel,GUIColor(0,1,0),BoxGroup("版本信息/版本信息"),PropertySpace(SpaceAfter =20)]
+    public string version = string.Empty;
+    /// <summary>
+    /// 远程资源地址
+    /// </summary>
+    [HideLabel,BoxGroup("版本信息/远端链接",true,true),PropertySpace(SpaceAfter =20)]
+    public string url;
+        
+    [HorizontalGroup("版本相关", 0.5f)] //设置一个父节点，然后水平排列，然后Box子节点垂直排列  
+    
+    [BoxGroup("版本相关/项目版本", true, true), ButtonGroup("版本相关/项目版本/Button"),Button("+", ButtonSizes.Large)] 
+    private void AddProject()
+    {
+        updateBuildVersion(true);
+    }
+    [BoxGroup("版本相关/项目版本",true,true),ButtonGroup("版本相关/项目版本/Button"), Button("-",ButtonSizes.Large)]
+    private void SubProject()
+    {
+        updateBuildVersion(false);
+    }
+    [BoxGroup("版本相关/资源版本",true,true),ButtonGroup("版本相关/资源版本/Button"),Button("+",ButtonSizes.Large)]
+    //[HorizontalGroup("Change/ver"),Button("+",ButtonSizes.Large)]
+    private void AddAsset()
+    {
+        updateAssetVersion(true);
+    }
+    [BoxGroup("版本相关/资源版本",true,true),ButtonGroup("版本相关/资源版本/Button"),Button("-",ButtonSizes.Large)]
+    private void SubAsset()
+    {
+        updateAssetVersion(false);
+    }
+    [HorizontalGroup("Change", 0.5f)] //设置一个父节点，然后水平排列，然后Box子节点垂直排列  
+    [Title("检查更新")]
+    [BoxGroup("Change/版本相关",true,true),Button("手动更新",ButtonSizes.Large)]
+    private void ManualUpdateProject()
+    {
+         string buildPath = ContentUpdateScript.GetContentStateDataPath(true);
+            Debug.Log("buildPath = " + buildPath);
+            var m_Settings = AddressableAssetSettingsDefaultObject.Settings;
+            List<AddressableAssetEntry> entrys =
+                ContentUpdateScript.GatherModifiedEntries(
+                    m_Settings, buildPath);
+            if (entrys.Count == 0) return;
+            StringBuilder sbuider = new StringBuilder();
+            sbuider.AppendLine("Need Update Assets:");
+            foreach (var _ in entrys)
+            {
+                sbuider.AppendLine(_.address);
+            }
+
+            Debug.Log(sbuider.ToString());
+            string[] ver = version.Split('.');
+            version = ver[0] + "." + ver[1] + "." + (int.Parse(ver[2]) + 1).ToString();
+            //将被修改过的资源单独分组
+            var groupName = string.Format("UpdateGroup_{0}", version);
+            ContentUpdateScript.CreateContentUpdateGroup(m_Settings, entrys, groupName);
+            AssetDatabase.Refresh();
+            var updateGroup = setting.FindGroup(groupName);
+            if (updateGroup != null)
+            {
+                foreach (var schema in updateGroup.Schemas)
+                {
+                    if (schema is UnityEditor.AddressableAssets.Settings.GroupSchemas
+                        .BundledAssetGroupSchema)
+                    {
+                        var bundledAssetGroupSchema =
+                            (schema as UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema);
+                        bundledAssetGroupSchema.BuildPath.SetVariableByName(updateGroup.Settings,
+                            AddressableAssetSettings.kRemoteBuildPath);
+                        bundledAssetGroupSchema.LoadPath.SetVariableByName(updateGroup.Settings,
+                            AddressableAssetSettings.kRemoteLoadPath);
+                        bundledAssetGroupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas
+                            .BundledAssetGroupSchema.BundlePackingMode.PackTogetherByLabel;
+                        bundledAssetGroupSchema.BundleNaming = UnityEditor.AddressableAssets.Settings.GroupSchemas
+                            .BundledAssetGroupSchema.BundleNamingStyle.NoHash;
+                    }
+                }
+            }
+    }
+    [BoxGroup("Change/版本相关",true,true),Button("自动更新",ButtonSizes.Large),PropertySpace(SpaceAfter = 49)]
+    private void AutomaticUpdateProject()
+    {
+                string buildPath = GetContentStateDataPath();
+            Debug.Log("buildPath = " + buildPath);
+            var m_Settings = AddressableAssetSettingsDefaultObject.Settings;
+            List<AddressableAssetEntry> entrys =
+                ContentUpdateScript.GatherModifiedEntries(
+                    m_Settings, buildPath);
+            if (entrys.Count == 0) return;
+            StringBuilder sbuider = new StringBuilder();
+            sbuider.AppendLine("Need Update Assets:");
+            foreach (var _ in entrys)
+            {
+                sbuider.AppendLine(_.address);
+            }
+
+            Debug.Log(sbuider.ToString());
+            string[] ver = version.Split('.');
+            version = ver[0] + "." + ver[1] + "." + (int.Parse(ver[2]) + 1).ToString();
+            //将被修改过的资源单独分组
+            var groupName = string.Format("UpdateGroup_{0}", version);
+            ContentUpdateScript.CreateContentUpdateGroup(m_Settings, entrys, groupName);
+            AssetDatabase.Refresh();
+            var updateGroup = setting.FindGroup(groupName);
+            if (updateGroup != null)
+            {
+                foreach (var schema in updateGroup.Schemas)
+                {
+                    if (schema is UnityEditor.AddressableAssets.Settings.GroupSchemas
+                        .BundledAssetGroupSchema)
+                    {
+                        var bundledAssetGroupSchema =
+                            (schema as UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema);
+                        bundledAssetGroupSchema.BuildPath.SetVariableByName(updateGroup.Settings,
+                            AddressableAssetSettings.kRemoteBuildPath);
+                        bundledAssetGroupSchema.LoadPath.SetVariableByName(updateGroup.Settings,
+                            AddressableAssetSettings.kRemoteLoadPath);
+                        bundledAssetGroupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas
+                            .BundledAssetGroupSchema.BundlePackingMode.PackTogetherByLabel;
+                        bundledAssetGroupSchema.BundleNaming = UnityEditor.AddressableAssets.Settings.GroupSchemas
+                            .BundledAssetGroupSchema.BundleNamingStyle.NoHash;
+                    }
+                }
+            }
+    }
+    [Title("增量更新"),PropertySpace(SpaceBefore = 2)]
+    [BoxGroup("Change/版本相关",true,true),Button("手动更新",ButtonSizes.Large)]
+    private void ManualIncrement()
+    {
+        isBuildSuccess = true;
+        BuildTools.ClearConsole();
+        Application.logMessageReceived += onLogMessage;
+        AssetDatabase.Refresh();
+        SetMD5Info();
+        AssetDatabase.Refresh();
+        string path = ContentUpdateScript.GetContentStateDataPath(true);
+        Debug.Log(path);
+        var m_Settings = AddressableAssetSettingsDefaultObject.Settings;
+        AddressablesPlayerBuildResult result =
+            ContentUpdateScript.BuildContentUpdate(AddressableAssetSettingsDefaultObject.Settings, path);
+        Debug.Log("BuildFinish path = " + m_Settings.RemoteCatalogBuildPath.GetValue(m_Settings));
+        AssetDatabase.Refresh();
+        CopyBuildData();
+        AssetDatabase.Refresh();
+        SetMD5Info(false);
+        AssetDatabase.Refresh();
+        if (isBuildSuccess)
+            EditorUtility.DisplayDialog("增量打包", "增量打包成功", "确定");
+        else
+            EditorUtility.DisplayDialog("增量打包资源失败", "请检查报错信息", "确定");
+        Application.logMessageReceived -= onLogMessage;
+        AssetDatabase.Refresh();
+    }
+    [BoxGroup("Change/版本相关",true,true),Button("自动更新",ButtonSizes.Large),PropertySpace(SpaceBefore = 9,SpaceAfter = 9)]
+    private void  AutomaticIncrement()
+    {
+        isBuildSuccess = true;
+        BuildTools.ClearConsole();
+        Application.logMessageReceived += onLogMessage;
+        SetMD5Info();
+        AssetDatabase.Refresh();
+        var path = GetContentStateDataPath();
+        Debug.Log(path);
+        var m_Settings = AddressableAssetSettingsDefaultObject.Settings;
+        AddressablesPlayerBuildResult result =
+            ContentUpdateScript.BuildContentUpdate(AddressableAssetSettingsDefaultObject.Settings, path);
+        Debug.Log("BuildFinish path = " + m_Settings.RemoteCatalogBuildPath.GetValue(m_Settings));
+        AssetDatabase.Refresh();
+        CopyBuildData();
+        AssetDatabase.Refresh();
+        SetMD5Info(false);
+        AssetDatabase.Refresh();
+        if (isBuildSuccess)
+            EditorUtility.DisplayDialog("增量打包", "增量打包成功", "确定");
+        else
+            EditorUtility.DisplayDialog("增量打包资源失败", "请检查报错信息", "确定");
+        Application.logMessageReceived -= onLogMessage;
+        AssetDatabase.Refresh();
+    }
+    
+    [BoxGroup("Change/版本相关",true,true),ButtonGroup("Change/版本相关/Button"),Button("标记图集",ButtonSizes.Large)]
+    //[HorizontalGroup("Change/ver"),Button("+",ButtonSizes.Large)]
+    private void AddMark()
+    {
+        Mark();
+        EditorUtility.DisplayDialog("自动标记", "自动标记成功", "确定");
+    }
+    [BoxGroup("Change/版本相关",true,true),ButtonGroup("Change/版本相关/Button"),Button("清理图集",ButtonSizes.Large)]
+    private void RemMark()
+    {
+        BuildTools.DeleteFolder(Application.dataPath + "/AddressableAssets/Local/SpriteAtlas");
+        AssetDatabase.Refresh();
+        Mark();
+        EditorUtility.DisplayDialog("清理图集成功", "图集清理", "确定");
+    }
+    
+    
+    
+    
+    [Title("设置")]
+    [BoxGroup("Change/打包相关",true,true,2),Button("设置为整包",ButtonSizes.Large)]
+    private void SettingBig()
+    {
+        markStatus(2);
+        EditorUtility.DisplayDialog("设置成功", "设置为整包", "确定");
+    }
+    [BoxGroup("Change/打包相关",true,true,2),Button("设置为分包",ButtonSizes.Large),PropertySpace(SpaceAfter =1)]
+    private void SettingMiddle()
+    {
+        markStatus(1);
+        EditorUtility.DisplayDialog("设置成功", "设置为分包", "确定");
+    }
+    [BoxGroup("Change/打包相关",true,true,2),Button("设置为小包",ButtonSizes.Large),PropertySpace(SpaceAfter =1)]
+    private void SettingSmall()
+    {
+        SetMD5Info(false);
+        markStatus(0);
+        EditorUtility.DisplayDialog("设置成功", "设置为小包", "确定");
+    }
+    [Title("打包资源")]
+    [BoxGroup("Change/打包相关",true,true,2), Button("打包整包资源",ButtonSizes.Large),PropertySpace(SpaceAfter =1)]
+    private void BuildBig()
+    {
+        buildByStatus(2, false);
+    }
+    [BoxGroup("Change/打包相关",true,true,2), Button("打包分包资源",ButtonSizes.Large),PropertySpace(SpaceAfter =1)]
+    private void BuildMiddle()
+    {
+        buildByStatus(1, false);
+    }
+    [BoxGroup("Change/打包相关",true,true,2), Button("打包小包资源",ButtonSizes.Large),PropertySpace(SpaceAfter =1)]
+    private void BuildSmall()
+    {
+        buildByStatus(0, false);
+    }
+    private void qwOnGUI()
     {
         GUILayout.BeginVertical();
 
@@ -895,7 +1176,8 @@ public class AddressableWindow : EditorWindow
             target = EditorUserBuildSettings.activeBuildTarget;
             isChooseTarget = true;
         }
-        target = (BuildTarget)EditorGUILayout.EnumPopup("Build Platform", target);
+
+        //target = (BuildTarget) EditorGUILayout.EnumPopup("Build Platform", target);
         SetParameters();
         GUILayout.Space(10);
 
@@ -904,14 +1186,16 @@ public class AddressableWindow : EditorWindow
         version = EditorGUILayout.TextArea(version, GUILayout.Width(50), GUILayout.Height(20));
         GUILayout.Space(50);
         var oldenvironment = environment;
-        environment = (BuildEnvironment)EditorGUILayout.EnumPopup("Build Environment", environment);
+        environment = (BuildEnvironment) EditorGUILayout.EnumPopup("Build Environment", environment);
         setActiveProfileId();
         if (oldenvironment != environment)
         {
             PlayerPrefs.SetString(oldenvironment.ToString() + "_BuildUrl", url);
-            url = PlayerPrefs.GetString(environment.ToString() + "_BuildUrl", @"http://[PrivateIpAddress]:[HostingServicePort]");
+            url = PlayerPrefs.GetString(environment.ToString() + "_BuildUrl",
+                @"http://[PrivateIpAddress]:[HostingServicePort]");
             oldenvironment = environment;
         }
+
         GUILayout.EndHorizontal();
         GUILayout.Space(10);
 
@@ -927,6 +1211,7 @@ public class AddressableWindow : EditorWindow
             Mark();
             EditorUtility.DisplayDialog("自动标记", "自动标记成功", "确定");
         }
+
         if (GUILayout.Button("清理图集"))
         {
             BuildTools.DeleteFolder(Application.dataPath + "/AddressableAssets/Local/SpriteAtlas");
@@ -934,22 +1219,26 @@ public class AddressableWindow : EditorWindow
             Mark();
             EditorUtility.DisplayDialog("清理图集成功", "图集清理", "确定");
         }
+
         if (GUILayout.Button("设置为整包"))
         {
             markStatus(2);
             EditorUtility.DisplayDialog("设置成功", "设置为整包", "确定");
         }
+
         if (GUILayout.Button("设置为分包"))
         {
             markStatus(1);
             EditorUtility.DisplayDialog("设置成功", "设置为分包", "确定");
         }
+
         if (GUILayout.Button("设置为小包"))
         {
             SetMD5Info(false);
             markStatus(0);
             EditorUtility.DisplayDialog("设置成功", "设置为小包", "确定");
         }
+
         GUILayout.EndHorizontal();
         GUILayout.Space(10);
 
@@ -958,14 +1247,17 @@ public class AddressableWindow : EditorWindow
         {
             buildByStatus(2, false);
         }
+
         if (GUILayout.Button("打包资源,分包"))
         {
             buildByStatus(1, false);
         }
+
         if (GUILayout.Button("打包资源小包"))
         {
             buildByStatus(0, false);
         }
+
         GUILayout.EndHorizontal();
         GUILayout.Space(10);
 
@@ -985,6 +1277,7 @@ public class AddressableWindow : EditorWindow
             {
                 sbuider.AppendLine(_.address);
             }
+
             Debug.Log(sbuider.ToString());
             string[] ver = version.Split('.');
             version = ver[0] + "." + ver[1] + "." + (int.Parse(ver[2]) + 1).ToString();
@@ -998,20 +1291,23 @@ public class AddressableWindow : EditorWindow
                 foreach (var schema in updateGroup.Schemas)
                 {
                     if (schema is UnityEditor.AddressableAssets.Settings.GroupSchemas
-                            .BundledAssetGroupSchema)
+                        .BundledAssetGroupSchema)
                     {
                         var bundledAssetGroupSchema =
-                               (schema as UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema);
+                            (schema as UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema);
                         bundledAssetGroupSchema.BuildPath.SetVariableByName(updateGroup.Settings,
                             AddressableAssetSettings.kRemoteBuildPath);
                         bundledAssetGroupSchema.LoadPath.SetVariableByName(updateGroup.Settings,
                             AddressableAssetSettings.kRemoteLoadPath);
-                        bundledAssetGroupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundlePackingMode.PackTogetherByLabel;
-                        bundledAssetGroupSchema.BundleNaming = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundleNamingStyle.NoHash;
+                        bundledAssetGroupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas
+                            .BundledAssetGroupSchema.BundlePackingMode.PackTogetherByLabel;
+                        bundledAssetGroupSchema.BundleNaming = UnityEditor.AddressableAssets.Settings.GroupSchemas
+                            .BundledAssetGroupSchema.BundleNamingStyle.NoHash;
                     }
                 }
             }
         }
+
         if (GUILayout.Button("手动增量打包资源"))
         {
             isBuildSuccess = true;
@@ -1023,7 +1319,8 @@ public class AddressableWindow : EditorWindow
             string path = ContentUpdateScript.GetContentStateDataPath(true);
             Debug.Log(path);
             var m_Settings = AddressableAssetSettingsDefaultObject.Settings;
-            AddressablesPlayerBuildResult result = ContentUpdateScript.BuildContentUpdate(AddressableAssetSettingsDefaultObject.Settings, path);
+            AddressablesPlayerBuildResult result =
+                ContentUpdateScript.BuildContentUpdate(AddressableAssetSettingsDefaultObject.Settings, path);
             Debug.Log("BuildFinish path = " + m_Settings.RemoteCatalogBuildPath.GetValue(m_Settings));
             AssetDatabase.Refresh();
             CopyBuildData();
@@ -1037,6 +1334,7 @@ public class AddressableWindow : EditorWindow
             Application.logMessageReceived -= onLogMessage;
             AssetDatabase.Refresh();
         }
+
         GUILayout.EndHorizontal();
         GUILayout.Space(10);
 
@@ -1045,10 +1343,12 @@ public class AddressableWindow : EditorWindow
         {
             updateAssetVersion();
         }
+
         if (GUILayout.Button("升级版本号"))
         {
             updateBuildVersion();
         }
+
         if (GUILayout.Button("自动检查更新"))
         {
             string buildPath = GetContentStateDataPath();
@@ -1064,6 +1364,7 @@ public class AddressableWindow : EditorWindow
             {
                 sbuider.AppendLine(_.address);
             }
+
             Debug.Log(sbuider.ToString());
             string[] ver = version.Split('.');
             version = ver[0] + "." + ver[1] + "." + (int.Parse(ver[2]) + 1).ToString();
@@ -1077,20 +1378,23 @@ public class AddressableWindow : EditorWindow
                 foreach (var schema in updateGroup.Schemas)
                 {
                     if (schema is UnityEditor.AddressableAssets.Settings.GroupSchemas
-                            .BundledAssetGroupSchema)
+                        .BundledAssetGroupSchema)
                     {
                         var bundledAssetGroupSchema =
-                               (schema as UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema);
+                            (schema as UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema);
                         bundledAssetGroupSchema.BuildPath.SetVariableByName(updateGroup.Settings,
                             AddressableAssetSettings.kRemoteBuildPath);
                         bundledAssetGroupSchema.LoadPath.SetVariableByName(updateGroup.Settings,
                             AddressableAssetSettings.kRemoteLoadPath);
-                        bundledAssetGroupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundlePackingMode.PackTogetherByLabel;
-                        bundledAssetGroupSchema.BundleNaming = UnityEditor.AddressableAssets.Settings.GroupSchemas.BundledAssetGroupSchema.BundleNamingStyle.NoHash;
+                        bundledAssetGroupSchema.BundleMode = UnityEditor.AddressableAssets.Settings.GroupSchemas
+                            .BundledAssetGroupSchema.BundlePackingMode.PackTogetherByLabel;
+                        bundledAssetGroupSchema.BundleNaming = UnityEditor.AddressableAssets.Settings.GroupSchemas
+                            .BundledAssetGroupSchema.BundleNamingStyle.NoHash;
                     }
                 }
             }
         }
+
         if (GUILayout.Button("自动增量打包资源"))
         {
             isBuildSuccess = true;
@@ -1101,7 +1405,8 @@ public class AddressableWindow : EditorWindow
             var path = GetContentStateDataPath();
             Debug.Log(path);
             var m_Settings = AddressableAssetSettingsDefaultObject.Settings;
-            AddressablesPlayerBuildResult result = ContentUpdateScript.BuildContentUpdate(AddressableAssetSettingsDefaultObject.Settings, path);
+            AddressablesPlayerBuildResult result =
+                ContentUpdateScript.BuildContentUpdate(AddressableAssetSettingsDefaultObject.Settings, path);
             Debug.Log("BuildFinish path = " + m_Settings.RemoteCatalogBuildPath.GetValue(m_Settings));
             AssetDatabase.Refresh();
             CopyBuildData();
@@ -1115,6 +1420,7 @@ public class AddressableWindow : EditorWindow
             Application.logMessageReceived -= onLogMessage;
             AssetDatabase.Refresh();
         }
+
         GUILayout.EndHorizontal();
         GUILayout.Space(10);
 
@@ -1123,14 +1429,17 @@ public class AddressableWindow : EditorWindow
         {
             buildByStatus(2);
         }
+
         if (GUILayout.Button("Build（分包）"))
         {
             buildByStatus(1);
         }
+
         if (GUILayout.Button("Build（小包）"))
         {
             buildByStatus(0);
         }
+
         if (GUILayout.Button("直接出包"))
         {
             isBuildSuccess = true;
@@ -1146,7 +1455,6 @@ public class AddressableWindow : EditorWindow
                     EditorUtility.RevealInFinder(BuildTools.OutPath);
                     BuildTools.OutPath = string.Empty;
                 }
-
             }
             else
             {
@@ -1156,8 +1464,10 @@ public class AddressableWindow : EditorWindow
                     BuildTools.OutPath = string.Empty;
                 }
             }
+
             Application.logMessageReceived -= onLogMessage;
         }
+
         GUILayout.EndHorizontal();
         GUILayout.Space(10);
 
@@ -1166,12 +1476,12 @@ public class AddressableWindow : EditorWindow
 
     private void onLogMessage(string condition, string StackTrace, LogType type)
     {
-
         if (type == LogType.Error)
         {
             if (condition != "EndLayoutGroup: BeginLayoutGroup must be called first.")
                 isBuildSuccess = false;
         }
     }
+
     #endregion
 }
