@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Loading 1
+  m_Name: Loading
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -62,5 +62,5 @@ SpriteAtlas:
   - home_bg_3840 1
   - loading_bg_illustration 1
   m_RenderDataMap: {}
-  m_Tag: Loading 1
+  m_Tag: Loading
   m_IsVariant: 0

@@ -158,7 +158,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
 --- !u!114 &174724119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -674,6 +674,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1626114886}
   - component: {fileID: 1626114885}
+  - component: {fileID: 1626114887}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -693,12 +694,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e44622f49e1f7484f86b5ca2bb776255, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AddressableManager: {fileID: 1626114887}
   prefabRef:
     m_AssetGUID: 33acde7725644d248b13c23278babb50
     m_SubObjectName: 
     m_SubObjectType: 
   AtlasedSpriteRef:
-    m_AssetGUID: 5fd536a7df1af2c45b8785e815b3dc91
+    m_AssetGUID: 47fa3c3d44cd1384c84005455fd32df8
     m_SubObjectName: 
     m_SubObjectType: 
   image: {fileID: 1032455443}
@@ -723,6 +725,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1626114887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626114884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2a6c483194d4c64da7c4c43bb892873, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1877395819
 GameObject:
   m_ObjectHideFlags: 0
