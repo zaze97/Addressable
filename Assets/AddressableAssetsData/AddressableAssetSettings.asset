@@ -35,7 +35,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f75229bfff367f14f855b6edeced5ca1, type: 2}
   - {fileID: 11400000, guid: 48ce215c3fbdcb24f9ccc47213305799, type: 2}
   - {fileID: 11400000, guid: 8544bb32cb1c2234e996af799be70003, type: 2}
-  - {fileID: 11400000, guid: d71ae83a63d1b5d4a9cef96c331fad32, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
     m_CleanupStreamingAssetsAfterBuilds: 1
@@ -64,9 +63,9 @@ MonoBehaviour:
       - m_Id: 682a26c9a4b2b49429c053db7819d087
         m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
       - m_Id: 96f38eede623c9146af161c4aff0e736
-        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
+        m_Value: AssetsBundle/LocalData/[BuildTarget]
       - m_Id: 2828fdad823b6a747ab838bde5261427
-        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/AssetsBundle/LocalData/[BuildTarget]'
+        m_Value: Assets/StreamingAssets/AssetsBundle/LocalData/[BuildTarget]
       - m_Id: e8f823adaf12e124780bb79e0f495f26
         m_Value: AssetsBundle/ServerData/[BuildTarget]/0.1/Debug
       - m_Id: 4b9f436634e19d0479eaf02acab400b3
@@ -82,9 +81,9 @@ MonoBehaviour:
       - m_Id: 2828fdad823b6a747ab838bde5261427
         m_Value: Assets/StreamingAssets/AssetsBundle/LocalData/[BuildTarget]
       - m_Id: e8f823adaf12e124780bb79e0f495f26
-        m_Value: AssetsBundle/ServerData/[BuildTarget]/0.1/Release
+        m_Value: ServerData/[BuildTarget]/0.1/Release
       - m_Id: 4b9f436634e19d0479eaf02acab400b3
-        m_Value: AssetsBundle/ServerData/[BuildTarget]/0.1/Release
+        m_Value: /poetry/ServerData/[BuildTarget]/0.1/Release
     - m_InheritedParent: 
       m_Id: 9ea9dbfee9853f24c9345a197d1e00e2
       m_ProfileName: Local
