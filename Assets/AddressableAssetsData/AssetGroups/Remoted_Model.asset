@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Remoted_Model
+  m_EditorClassIdentifier: 
+  m_GroupName: Remoted_Model
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 01a1f1c12f5fe4e4a9e9be24c09e5ba8
+  m_SerializeEntries:
+  - m_GUID: 75299ef02ad021a409bd754f82ec4b6b
+    m_Address: Remoted/Model/Cube3 1
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Model
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  - m_GUID: 50ffbf2ce5ef863439005b9bccfd0e26
+    m_Address: Remoted/Model/Cube3
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Model
+    m_MainAsset: {fileID: 0}
+    m_TargetAsset: {fileID: 0}
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 1531c4688a9e47d4096199a516d0da4b, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: db7414355109c5a449b391abc9c4d2f5, type: 2}
+    - {fileID: 11400000, guid: 731309e6fc0cb2b41b6a80b59444c369, type: 2}

@@ -34,7 +34,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ec496244f39b8bf4cb6f76d747bbed3c, type: 2}
   - {fileID: 11400000, guid: f75229bfff367f14f855b6edeced5ca1, type: 2}
   - {fileID: 11400000, guid: 48ce215c3fbdcb24f9ccc47213305799, type: 2}
-  - {fileID: 11400000, guid: dc11d7f6e7d5b4d409ff6ab0f64b7bbb, type: 2}
   - {fileID: 11400000, guid: 8544bb32cb1c2234e996af799be70003, type: 2}
   m_BuildSettings:
     m_CompileScriptsInVirtualMode: 0
@@ -70,7 +69,7 @@ MonoBehaviour:
       - m_Id: e8f823adaf12e124780bb79e0f495f26
         m_Value: AssetsBundle/ServerData/[BuildTarget]/0.1/Debug
       - m_Id: 4b9f436634e19d0479eaf02acab400b3
-        m_Value: AssetsBundle/ServerData/[BuildTarget]/0.1/Debug
+        m_Value: Assets/StreamingAssets/AssetsBundle/ServerData/[BuildTarget]/0.1/Debug
     - m_InheritedParent: 
       m_Id: 4ccbca7cafde7bb4788b2a090c4e0a43
       m_ProfileName: Release
@@ -84,7 +83,7 @@ MonoBehaviour:
       - m_Id: e8f823adaf12e124780bb79e0f495f26
         m_Value: AssetsBundle/ServerData/[BuildTarget]/0.1/Release
       - m_Id: 4b9f436634e19d0479eaf02acab400b3
-        m_Value: AssetsBundle/ServerData/[BuildTarget]/0.1/Release
+        m_Value: Assets/StreamingAssets/AssetsBundle/ServerData/[BuildTarget]/0.1/Release
     m_ProfileEntryNames:
     - m_Id: 682a26c9a4b2b49429c053db7819d087
       m_Name: BuildTarget

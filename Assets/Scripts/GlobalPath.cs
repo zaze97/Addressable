@@ -1,27 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-/// <summary>
-/// 记录所有资源MD5信息
-/// </summary>
-public class MD5Info
-{
-    public string AssetPath;
-    public string MD5;
-    public int Size;
 
-    /// <summary>
-    /// 下载时使用，记录已经下载了的大小
-    /// </summary>
-    public int LoadSize = 0;
-}
-
-public enum BuildEnvironment
-{
-    // Local,
-    Debug,
-    Release
-}
 public class GlobalPath {
 
     public  static string AtlasLocalRoot
