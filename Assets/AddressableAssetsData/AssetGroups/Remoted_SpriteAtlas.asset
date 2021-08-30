@@ -15,16 +15,16 @@ MonoBehaviour:
   m_GroupName: Remoted_SpriteAtlas
   m_Data:
     m_SerializedData: []
-  m_GUID: ad0df6a3938bb9a409d662f80c21b498
+  m_GUID: 2e80012832f38494aacef79a439256e7
   m_SerializeEntries:
   - m_GUID: 8419efb4037323449b4bd73e58c6bee3
-    m_Address: Loading
+    m_Address: Remoted/SpriteAtlas/Loading
     m_ReadOnly: 0
     m_SerializedLabels:
-    - SpriteAtlas
     - Loading.spriteatlas
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
+    - SpriteAtlas
+    m_MainAsset: {fileID: 4343727234628468602, guid: 8419efb4037323449b4bd73e58c6bee3, type: 2}
+    m_TargetAsset: {fileID: 4343727234628468602, guid: 8419efb4037323449b4bd73e58c6bee3, type: 2}
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 1531c4688a9e47d4096199a516d0da4b, type: 2}
   m_SchemaSet:

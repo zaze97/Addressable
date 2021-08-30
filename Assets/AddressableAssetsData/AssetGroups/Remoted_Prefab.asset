@@ -15,10 +15,10 @@ MonoBehaviour:
   m_GroupName: Remoted_Prefab
   m_Data:
     m_SerializedData: []
-  m_GUID: fe10451275b7ba947b7814b4affcf9ec
+  m_GUID: b91ecfff360bd7648bd520e543a56fac
   m_SerializeEntries:
   - m_GUID: dc7048be2ed55cc498ade010d9ac87d3
-    m_Address: Remoted/PrefabCube4
+    m_Address: Remoted/Prefab/Cube4
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefab

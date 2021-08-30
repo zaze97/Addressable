@@ -15,10 +15,10 @@ MonoBehaviour:
   m_GroupName: Local_Prefab
   m_Data:
     m_SerializedData: []
-  m_GUID: c7d70d888bb91fa4e86bcdb248ccceee
+  m_GUID: a99c0b9acde6d95439489a0ea9caf751
   m_SerializeEntries:
   - m_GUID: 093c18bc1f3812e4dadc6ade79dbb808
-    m_Address: Local/PrefabCube2
+    m_Address: Local/Prefab/Cube2
     m_ReadOnly: 0
     m_SerializedLabels:
     - Prefab

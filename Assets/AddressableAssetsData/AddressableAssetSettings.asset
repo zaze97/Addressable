@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_DefaultGroup: 0c09645c3543ec74bb450ec35ebda012
   m_OptimizeCatalogSize: 0
-  m_BuildRemoteCatalog: 1
+  m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 0
   m_DisableCatalogUpdateOnStart: 1
   m_IgnoreUnsupportedFilesInBuild: 0
@@ -81,23 +81,9 @@ MonoBehaviour:
       - m_Id: 2828fdad823b6a747ab838bde5261427
         m_Value: Assets/StreamingAssets/AssetsBundle/LocalData/[BuildTarget]
       - m_Id: e8f823adaf12e124780bb79e0f495f26
-        m_Value: ServerData/[BuildTarget]/0.1/Release
+        m_Value: AssetsBundle/ServerData/[BuildTarget]/0.1/Release
       - m_Id: 4b9f436634e19d0479eaf02acab400b3
-        m_Value: /poetry/ServerData/[BuildTarget]/0.1/Release
-    - m_InheritedParent: 
-      m_Id: 9ea9dbfee9853f24c9345a197d1e00e2
-      m_ProfileName: Local
-      m_Values:
-      - m_Id: 682a26c9a4b2b49429c053db7819d087
-        m_Value: '[UnityEditor.EditorUserBuildSettings.activeBuildTarget]'
-      - m_Id: 96f38eede623c9146af161c4aff0e736
-        m_Value: 
-      - m_Id: 2828fdad823b6a747ab838bde5261427
-        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
-      - m_Id: e8f823adaf12e124780bb79e0f495f26
-        m_Value: '[UnityEngine.AddressableAssets.Addressables.BuildPath]/[BuildTarget]'
-      - m_Id: 4b9f436634e19d0479eaf02acab400b3
-        m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
+        m_Value: AssetsBundle/ServerData/[BuildTarget]/0.1/Release
     m_ProfileEntryNames:
     - m_Id: 682a26c9a4b2b49429c053db7819d087
       m_Name: BuildTarget
@@ -118,9 +104,11 @@ MonoBehaviour:
   m_LabelTable:
     m_LabelNames:
     - default
+    - Atlas
+    - Loading
     - Loading.spriteatlas
-    - Prefab
     - Model
+    - Prefab
     - SpriteAtlas
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
@@ -135,7 +123,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 38752e2f71419334c9138e9a74e325f1, type: 2}
   - {fileID: 11400000, guid: 85fbaf64c6b8bcd41a5f0aaf7bf7caee, type: 2}
   - {fileID: 11400000, guid: 9013cd5819225ff4990ee17efb8ad03e, type: 2}
-  m_ActiveProfileId: 4ccbca7cafde7bb4788b2a090c4e0a43
+  m_ActiveProfileId: 129ac92ac63feb445a15995b3d8d8be9
   m_HostingServicesManager:
     m_HostingServiceInfos: []
     m_Settings: {fileID: 11400000}
