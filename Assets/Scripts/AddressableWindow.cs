@@ -897,7 +897,8 @@ public class AddressableWindow : OdinEditorWindow
             version = ver[0] + "." + ver[1] + "." + (0);
         SetParameters();
     }
-
+    #endregion
+    
     #region 编辑器按钮相关
     [HorizontalGroup("版本信息", 0.1f, LabelWidth = 20)] //设置一个父节点，然后水平排列，然后Box子节点垂直排列
     /// <summary>
@@ -1109,7 +1110,7 @@ public class AddressableWindow : OdinEditorWindow
         AssetDatabase.Refresh();
     }
 
-    [BoxGroup("Change/版本相关", true, true), ButtonGroup("Change/版本相关/Button"), Button("标记图集", ButtonSizes.Large)]
+    [BoxGroup("Change/版本相关", true, true), ButtonGroup("Change/版本相关/Button"), Button("标记打包文件", ButtonSizes.Large)]
     //[HorizontalGroup("Change/ver"),Button("+",ButtonSizes.Large)]
     private void AddMark()
     {
@@ -1117,13 +1118,24 @@ public class AddressableWindow : OdinEditorWindow
         EditorUtility.DisplayDialog("自动标记", "自动标记成功", "确定");
     }
 
-    [BoxGroup("Change/版本相关", true, true), ButtonGroup("Change/版本相关/Button"), Button("清理图集", ButtonSizes.Large)]
+    [BoxGroup("Change/版本相关", true, true), ButtonGroup("Change/版本相关/Button"), Button("清理标记文件", ButtonSizes.Large)]
     private void RemMark()
     {
         BuildTools.DeleteFolder(Application.dataPath + "/AddressableAssets/Local/SpriteAtlas");
+        BuildTools.DeleteFolder(Application.dataPath + "/AddressableAssets/Remoted/SpriteAtlas");
         AssetDatabase.Refresh();
-        Mark();
+        List<string> name =BuildTools.GetFolder();
+        for (int i = 0; i < name.Count; i++)
+        {
+            if (!name[i].Contains("Local_Atlas") || !name[i].Contains("Remoted_Atlas"))
+            {
+                var group=setting.FindGroup(name[i]);
+                setting.RemoveGroup(group);
+            }
+        }
+
         EditorUtility.DisplayDialog("清理图集成功", "图集清理", "确定");
+     
     }
 
 
@@ -1226,5 +1238,5 @@ public class AddressableWindow : OdinEditorWindow
         }
     }
 
-    #endregion
+
 }

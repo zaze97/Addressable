@@ -3,6 +3,7 @@ using System.IO;
 using System;
 using System.Text;
 #if UNITY_EDITOR
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.AddressableAssets.Settings;
 using System.Reflection;
@@ -172,6 +173,33 @@ public static class BuildTools
                 Directory.Delete(dirs[i].FullName, true);
             }
         }
+    }
+    /// <summary>
+    /// 返回说有文件夹的组合名字
+    /// </summary>
+    public static List<string> GetFolder()
+    {
+        List<string> name=new List<string>();
+        //获取指定路径下的内容
+        string filePath = Application.dataPath+"/AddressableAssets";
+        string LocalPath = filePath + "/Local";
+        string RemotedPath = filePath + "/Remoted";
+        DirectoryInfo Localfolder= new DirectoryInfo(LocalPath);
+        DirectoryInfo Remotedfolder= new DirectoryInfo(RemotedPath);
+        //遍历文件夹
+        foreach (DirectoryInfo folder in Localfolder.GetDirectories())
+        {
+            string[] foldernames=folder.ToString().Split('\\');
+            string foldername = foldernames[foldernames.Length - 1];
+            name.Add("Local_"+foldername);
+        }
+        foreach (DirectoryInfo folder in Remotedfolder.GetDirectories())
+        {
+            string[] foldernames=folder.ToString().Split('\\');
+            string foldername = foldernames[foldernames.Length - 1];
+            name.Add("Remoted_"+foldername);
+        }
+        return name;
     }
 
     public static void ClearConsole()
