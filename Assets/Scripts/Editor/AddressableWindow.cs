@@ -1,4 +1,7 @@
-﻿using System;
+﻿# if UNITY_EDITOR
+
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -1205,6 +1208,7 @@ public class AddressableWindow : OdinEditorWindow
     {
        string abPath= Directory.GetParent(Application.dataPath).ToString()+"/AssetsBundle";
        BuildTools.CopyFolder(abPath,Application.streamingAssetsPath);
+       EditorUtility.DisplayDialog("一键依赖ab包到StreamingAssets目录", "复制成功", "确定");
     }
 
     [BoxGroup("Build", true, true), ButtonGroup("Build/Button"), Button("整包", ButtonSizes.Large), GUIColor(0, 1, 0)]
@@ -1265,3 +1269,4 @@ public class AddressableWindow : OdinEditorWindow
 
 
 }
+#endif

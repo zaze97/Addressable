@@ -159,7 +159,8 @@ public static class BuildTools
                 //采用递归的方法实现
                 CopyFolder(c, destDir);
             });
- 
+            AssetDatabase.Refresh(); //刷新 
+            
         }
     }
     /// <remarks>文件夹复制</remarks>
